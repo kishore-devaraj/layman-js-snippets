@@ -1,5 +1,14 @@
 'use strict'
 
+/** 
+ * Tree Data structure
+ * 1. Contains only one root Node
+ * 2. Contains N - 1 Links/Edges when there is N Node
+ * 3. depth - From the root to node (Count the links)
+ * 4. height - From the deepest leaf to the current Node
+ * 5. Tree DS can be recursive in nature
+*/
+
 function Node (value, parent = null) {
   this.parentNode = parent
   this.value = value
@@ -13,7 +22,7 @@ function Node (value, parent = null) {
   }
 }
 
-const dummyData = [1, 3, 2, 1, 9, 6]
+const dummyData = [1, 3, 2, 4, 9, 6, 7]
 
 /**
  * In Binary, there should be one root node
@@ -52,15 +61,20 @@ function goDeep (node, el) {
   }
 }
 
+let sortedList = []
+
 function printTree(node){
-  console.log(node.value)
-  if(node.hasOwnProperty('rightNode')){
-    printTree(node.rightNode)
-  }
-  
   if(node.hasOwnProperty('leftNode')){
     printTree(node.leftNode)
+  }
+
+  sortedList.push(node.value)
+
+  if(node.hasOwnProperty('rightNode')){
+    printTree(node.rightNode)
   }
 }
 
 printTree(rootNode)
+module.exports = sortedList, rootNode
+
