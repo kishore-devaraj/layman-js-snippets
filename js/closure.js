@@ -94,3 +94,49 @@ let getSecretCode = (function () {
 })()
 
 console.log(getSecretCode())
+
+/**
+ * Closure is combination of function delared in lexical enviorment
+ * Closure can be used for callback function for event to change particular
+ */
+
+function makeSizer (size) {
+  return function() {
+    document.body.style.fontSize = size
+  }  
+}
+
+let fontSize12 = makeSizer(12)
+let fontSize14 = makeSizer(14)
+let fontSize16 = makeSizer(16)
+
+/**
+ * We can emulate private function and variables
+ * using closure
+ */
+
+let counter = (function () {
+  let countValue = 0;
+  function actionOnCountValue (value) {
+    countValue = value
+  }
+  return {
+    increment: function () {
+      actionOnCountValue(countValue + 1)
+    },
+    decrement: function () {
+      actionOnCountValue(countValue - 1)
+    },
+    value: function () {
+      return countValue
+    }
+  }
+})()
+
+console.log(counter.value())
+counter.increment()
+counter.increment()
+console.log(counter.value())
+counter.decrement()
+console.log(counter.value())
+console.log(counter.countValue)
