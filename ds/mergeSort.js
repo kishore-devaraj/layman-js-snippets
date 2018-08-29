@@ -37,7 +37,7 @@ function Merge (leftArray, rightArray, array) {
   }
 
   while (rightArray.length) {
-    console.log(`Left Array is ${rightArray}`)
+    console.log(`Right Array is ${rightArray}`)
     array[index++] = rightArray.shift()
   }
 
