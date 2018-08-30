@@ -1,6 +1,15 @@
 function heapSort (array) {
   // Build Max Heap Binary Tree
   maxHeapBinaryTree(array)
+  let lastElementIndex = array.length - 1
+
+  while (lastElementIndex > 0) {
+    swap(array, 0, lastElementIndex)
+    heapify(array, 0, lastElementIndex)
+    lastElementIndex -= 1
+  }
+
+  console.log(`Sorted Array is ${array}`)
 }
 
 function maxHeapBinaryTree (array) {
@@ -10,37 +19,31 @@ function maxHeapBinaryTree (array) {
     heapify(array, i, array.length)
     i--;
   }
-  console.log(`Final Heap Binary Tree in Array ${array}`)
+  console.log(`Heap Binary Tree as Array ${array}`)
 }
 
-function heapify(heap, i, max) {
-  var index, leftChild, righChild;
-  
-  while(i < max) {
-    console.log(`Array current status ${heap}`)
-    index = i;
-    console.log(`Current Parent Index: ${i}`)
+function heapify (array, i, max) {
+  let index, leftChildIndex, rightChildIndex
 
-    leftChild = 2*i + 1;
-    righChild = leftChild + 1;
+  while (i < max) {
+    index = i
+    leftChildIndex = (index * 2) + 1
+    rightChildIndex = leftChildIndex + 1 
 
-    if (leftChild < max && heap[leftChild] > heap[index]) {
-      console.log(`Left Child ${leftChild} is candidate for swapping with parent`)
-      index = leftChild;
+    if(leftChildIndex < max && array[leftChildIndex] > array[index]) {
+      index = leftChildIndex
     }
 
-    if (righChild < max && heap[righChild] > heap[index]) {
-      console.log(`Right Child ${righChild} is candidate for swapping with parent`)
-      index = righChild;
-    }
-      
-    if (index == i) {
-      return;
+    if(rightChildIndex < max && array[rightChildIndex] > array[index]) {
+      index = rightChildIndex
     }
 
-    swap(heap,i, index);
-    
-    i = index;
+    if(i === index) {
+      return
+    }
+
+    swap(array, i, index)
+    i = index
   }
 }
 
