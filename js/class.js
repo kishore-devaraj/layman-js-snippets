@@ -85,7 +85,7 @@ console.log(tonka.getAge)
 	}
   }
 
-  // Declaring static variable outside the class Body
+  // Declaring static variable outside the class Body (Only for Class)
   Rectangle.staticWidth = 30
 
   // Declarting prototypes for the function
@@ -93,6 +93,8 @@ console.log(tonka.getAge)
 let rect1 = new Rectangle(10, 10)
 let rect2 = new Rectangle(20, 20)
 console.log(rect1.width)
+console.log(Rectangle.staticWidth)
+console.log(rect1.prototypeWidth)
 console.log(rect1.prototypeWidth)
 console.log(rect2.prototypeWidth)
 
