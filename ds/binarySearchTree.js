@@ -3,6 +3,7 @@
 class BST {
   constructor () {
     this.root = null
+    this.iteration = 0
   }
 }
 
@@ -66,6 +67,33 @@ BST.prototype.postOrderTraversal = function (root) {
   }
 }
 
+BST.prototype.depthFirstSearch = function (node) {
+  if(node) {
+    console.log(node.value)
+    this.depthFirstSearch(node.left)
+    this.depthFirstSearch(node.right)
+  }
+}
+
+BST.prototype.breadthFirstSearch = function (node) {
+  if(!this.queue) {
+    this.queue = []
+    this.queue.push(node)
+  }
+
+  if(node) {
+    console.log(node.value)
+    if (node.left) {
+      this.queue.push(node.left)
+    } 
+    if (node.right) {
+      this.queue.push(node.right)
+    }
+    
+    this.queue.shift()
+    this.breadthFirstSearch(this.queue[0])
+  }
+}
 
 const bst = new BST()
 bst.insert(3)
@@ -76,6 +104,8 @@ bst.insert(8)
 bst.insert(9)
 bst.insert(13)
 bst.insert(7)
-// bst.inorderTraversal(bst.root)
+// bst.inOrderTraversal(bst.root)
 // bst.preOrderTraversal(bst.root)
-bst.postOrderTraversal(bst.root)
+// bst.postOrderTraversal(bst.root)
+// bst.depthFirstSearch(bst.root)
+// bst.breadthFirstSearch(bst.root)
