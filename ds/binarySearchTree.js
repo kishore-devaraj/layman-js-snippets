@@ -45,8 +45,10 @@ BST.prototype.insert = function (value) {
 
 BST.prototype.inOrderTraversal = function (root) {
   if (root) {
+    if (root === this.root) this.inOrderArray = [] 
     this.inOrderTraversal(root.left)
     console.log(root.value)
+    this.inOrderArray.push(root.value)
     this.inOrderTraversal(root.right)
   }
 }
@@ -148,15 +150,40 @@ BST.prototype.search = function (node, value) {
   }
   return false
 }
+
+BST.prototype.isBST = function (node) {
+  this.inOrderTraversal(node)
+  // Flag to notify the BST correctness
+  this.isBST = true
+      
+  // Part of bubble sort implementation - O(n)
+  for (let index = 0; index < this.inOrderArray.length - 1; index++) {
+    if (this.inOrderArray[index] > this.inOrderArray[index+1]) {
+      this.isBST = false
+      break
+    }
+  }
+  return this.isBST
+}
+
+BST.prototype.isBalanced = function (node) {
+  if(!node) return true
+  let isBalanced = (this.isBalanced(node.left) && this.isBalanced(node.right))
+  let isChildHeightBalanced = (Math.abs(this.height(node.left) - this.height(node.right)) - 1) <= 1 ? 
+      true : false
+      // console.log(isChildHeightBalanced)
+  return isBalanced && isChildHeightBalanced  
+}
+
 const bst = new BST()
-bst.insert(3)
-bst.insert(4)
 bst.insert(1)
-bst.insert(6)
-bst.insert(18)
-bst.insert(9)
-bst.insert(13)
-bst.insert(7)
+bst.insert(2)
+bst.insert(3)
+// bst.insert(6)
+// bst.insert(18)
+// bst.insert(9)
+// bst.insert(13)
+// bst.insert(7)
 // bst.inOrderTraversal(bst.root)
 // bst.preOrderTraversal(bst.root)
 // bst.postOrderTraversal(bst.root)
@@ -167,3 +194,5 @@ bst.insert(7)
 // console.log(bst.height(bst.root))
 // console.log(bst.depth(bst.root, 9))
 // console.log(bst.search(bst.root, 11))
+// console.log(bst.isBST(bst.root))
+console.log(bst.isBalanced(bst.root))
