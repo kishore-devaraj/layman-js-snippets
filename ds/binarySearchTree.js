@@ -1,7 +1,7 @@
 'use strict'
 
 class BST {
-  constructor () {
+  constructor() {
     this.root = null
     this.iteration = 0
   }
@@ -17,34 +17,34 @@ class Node {
 
 BST.prototype.insert = function (value) {
   let node = new Node(value, null, null)
-  if(!this.root) {
+  if (!this.root) {
     this.root = node
     return
   }
 
   let currentNode = this.root
-  
-  while(currentNode) {
-    if(value < currentNode.value) {
-      if(!currentNode.left) {
+
+  while (currentNode) {
+    if (value < currentNode.value) {
+      if (!currentNode.left) {
         currentNode.left = node
         break
       } else {
         currentNode = currentNode.left
       }
     } else {
-      if(!currentNode.right) {
+      if (!currentNode.right) {
         currentNode.right = node
         break
       } else {
         currentNode = currentNode.right
       }
     }
-  } 
+  }
 }
 
 BST.prototype.inOrderTraversal = function (root) {
-  if(root){
+  if (root) {
     this.inOrderTraversal(root.left)
     console.log(root.value)
     this.inOrderTraversal(root.right)
@@ -52,7 +52,7 @@ BST.prototype.inOrderTraversal = function (root) {
 }
 
 BST.prototype.preOrderTraversal = function (root) {
-  if(root){
+  if (root) {
     console.log(root.value)
     this.preOrderTraversal(root.left)
     this.preOrderTraversal(root.right)
@@ -60,7 +60,7 @@ BST.prototype.preOrderTraversal = function (root) {
 }
 
 BST.prototype.postOrderTraversal = function (root) {
-  if(root){
+  if (root) {
     console.log(root.value)
     this.postOrderTraversal(root.left)
     this.postOrderTraversal(root.right)
@@ -68,7 +68,7 @@ BST.prototype.postOrderTraversal = function (root) {
 }
 
 BST.prototype.depthFirstSearch = function (node) {
-  if(node) {
+  if (node) {
     console.log(node.value)
     this.depthFirstSearch(node.left)
     this.depthFirstSearch(node.right)
@@ -76,31 +76,84 @@ BST.prototype.depthFirstSearch = function (node) {
 }
 
 BST.prototype.breadthFirstSearch = function (node) {
-  if(!this.queue) {
+  if (!this.queue) {
     this.queue = []
     this.queue.push(node)
   }
 
-  if(node) {
+  if (node) {
     console.log(node.value)
     if (node.left) {
       this.queue.push(node.left)
-    } 
+    }
     if (node.right) {
       this.queue.push(node.right)
     }
-    
+
     this.queue.shift()
     this.breadthFirstSearch(this.queue[0])
   }
 }
 
+BST.prototype.max = function (root) {
+  if (root) {
+    if (root.right) {
+      return this.max(root.right)
+    } else {
+      return root.value
+    }
+  }
+}
+
+BST.prototype.min = function (root) {
+  if (root) {
+    if (root.left) {
+      return this.min(root.left)
+    } else {
+      return root.value
+    }
+  }
+}
+
+BST.prototype.height = function (root) {
+  if (!root) return 0
+  let leftHeight = this.height(root.left)
+  let rightHeight = this.height(root.right)
+  return Math.max(leftHeight, rightHeight) + 1
+}
+
+BST.prototype.depth = function (node, value) {
+  if (node) {
+    if (node === this.root) this.depthValue = 0
+    else this.depthValue += 1
+    if (node.value === value) return this.depthValue  
+    if (node.value > value) {
+      return this.depth(node.left, value)
+    } else {
+      return this.depth(node.right, value)
+    }
+  }
+}
+
+BST.prototype.search = function (node, value) {
+  if (node) {
+    if (node.value === value) {
+      return true
+    }
+    if (node.value > value) {
+      return this.search(node.left, value)
+    } else {
+      return this.search(node.right, value)
+    }
+  }
+  return false
+}
 const bst = new BST()
 bst.insert(3)
 bst.insert(4)
 bst.insert(1)
 bst.insert(6)
-bst.insert(8)
+bst.insert(18)
 bst.insert(9)
 bst.insert(13)
 bst.insert(7)
@@ -109,3 +162,8 @@ bst.insert(7)
 // bst.postOrderTraversal(bst.root)
 // bst.depthFirstSearch(bst.root)
 // bst.breadthFirstSearch(bst.root)
+// console.log(bst.max(bst.root))
+// console.log(bst.min(bst.root))
+// console.log(bst.height(bst.root))
+// console.log(bst.depth(bst.root, 9))
+// console.log(bst.search(bst.root, 11))
