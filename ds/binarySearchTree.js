@@ -167,23 +167,32 @@ BST.prototype.isBST = function (node) {
 }
 
 BST.prototype.isBalanced = function (node) {
-  if(!node) return true
-  let isBalanced = (this.isBalanced(node.left) && this.isBalanced(node.right))
-  let isChildHeightBalanced = (Math.abs(this.height(node.left) - this.height(node.right)) - 1) <= 1 ? 
-      true : false
-      // console.log(isChildHeightBalanced)
-  return isBalanced && isChildHeightBalanced  
+  if(node) {
+    let leftChildHeight
+    let rightChildHeight
+    if((!node.left) && (!node.right)) return true
+    
+    leftChildHeight = this.height(node.left)
+    rightChildHeight = this.height(node.right)
+
+    if (Math.abs(leftChildHeight - rightChildHeight) > 1) {
+      return false
+    } else {
+      return this.isBalanced(node.left) && this.isBalanced(node.right)
+    }
+  }
+  return true
 }
 
 const bst = new BST()
-bst.insert(1)
 bst.insert(2)
+bst.insert(1)
+bst.insert(5)
+bst.insert(4)
 bst.insert(3)
-// bst.insert(6)
-// bst.insert(18)
-// bst.insert(9)
-// bst.insert(13)
-// bst.insert(7)
+bst.insert(9)
+bst.insert(13)
+bst.insert(7)
 // bst.inOrderTraversal(bst.root)
 // bst.preOrderTraversal(bst.root)
 // bst.postOrderTraversal(bst.root)
