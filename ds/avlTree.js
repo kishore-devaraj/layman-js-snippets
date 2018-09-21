@@ -151,11 +151,36 @@ AVL.prototype.singleRotate = function (node, otherNode, direction) {
   }
 }
 
+AVL.prototype.inOrderTraversal = function (root) {
+  if (root) {
+    if (root === this.root) this.inOrderArray = [] 
+    this.inOrderTraversal(root.left)
+    console.log(root.value)
+    this.inOrderArray.push(root.value)
+    this.inOrderTraversal(root.right)
+  }
+}
+
+AVL.prototype.preOrderTraversal = function (root) {
+  if (root) {
+    console.log(root.value)
+    this.preOrderTraversal(root.left)
+    this.preOrderTraversal(root.right)
+  }
+}
+
+AVL.prototype.postOrderTraversal = function (root) {
+  if (root) {
+    console.log(root.value)
+    this.postOrderTraversal(root.left)
+    this.postOrderTraversal(root.right)
+  }
+}
+
 const avl = new AVL()
 avl.insert(3)
 avl.insert(2)
 avl.insert(4)
 avl.insert(6)
 avl.insert(5)
-console.log(avl)
-console.log(avl.isBalanced(this.root))
+console.log(avl.isBST(avl.root))
