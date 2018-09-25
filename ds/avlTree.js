@@ -14,6 +14,7 @@
 class AVL {
   constructor() {
     this.root = null
+    this.prevParsingDirection = ''
   }
 }
 
@@ -107,55 +108,48 @@ AVL.prototype.selfBalance = function (node) {
     let leftChildHeight = this.height(node.left)
     let rightChildHeight = this.height(node.right)
     let currentParsingDirection = leftChildHeight > rightChildHeight ? 'left' : 'right'
+    let oppParsingDirection = leftChildHeight >  rightChildHeight ? 'right' : 'left'
+    let child = node[currentParsingDirection]
+    let isChildBalanced = this.isBalanced(child)
 
-    let isChildBalanced = this.isBalanced(node[currentParsingDirection])
-    if(isChildBalanced) {
-      let sideToRotate = leftChildHeight > rightChildHeight ? 'right' : 'left'
-      this.singleRotate(node[currentParsingDirection], node, sideToRotate)  
+    if (isChildBalanced) {
+      let singleRotation = child[currentParsingDirection] !== null ? true : false
+      if (singleRotation) {
+        console.log('Single Rotation')
+        let sideToRotate = leftChildHeight > rightChildHeight ? 'right' : 'left'
+        this.singleRotate(node[currentParsingDirection], node, sideToRotate)
+        return
+      } else {
+        console.log('Double Rotation')
+        this.singleRotate(child, child[oppParsingDirection], currentParsingDirection)
+        this.singleRotate(node, child, oppParsingDirection)
+        return
+      }
     } else {
       this.selfBalance(node[currentParsingDirection])
     }
-
-    // if (!this.isBalanced(this.root)) this.selfBalance(this.root)
-
-    // if (this.root !== node) {
-    //   if (this.parsingDirection === currentParsingDirection) {
-    //     // Single Rotation
-    //     let singleRotationDirection = currentParsingDirection === 'right' ? 'left' : 'right'
-    //     this.singleRotate(node, node.parent, singleRotationDirection)
-    //   } else {
-    //     // Double Rotation
-    //     let nodeToSwapped = node[currentParsingDirection] 
-    //     this.singleRotate(nodeToSwapped, node, this.parsingDirection)
-    //     this.singleRotate(nodeToSwapped, node.parent, currentParsingDirection)
-
-    //     return
-    //   }
-    // } else {
-    //   // Don't rotate the root node
-    //   this.parsingDirection = currentParsingDirection
-    //   this.otherNode = node
-    // }
-
-    // if (!this.isBalanced(this.root)) {
-    //   if (node[currentParsingDirection]) {
-    //     this.selfBalance(node[currentParsingDirection])
-    //   }
-    // }
   }
+
+  if (!this.isBalanced(this.root)) this.selfBalance(this.root)
 }
 
 AVL.prototype.singleRotate = function (node, otherNode, direction) {
-  // console.log('Node ', node)
-  // console.log('OtherNode ', otherNode)
-  // console.log('******************')
+  console.log('Node ', node)
+  console.log('ParentNode ', otherNode)
+  console.log('Rotation ', direction)
+  console.log('******************')
   if (direction === 'left') {
     if (node.hasOwnProperty('left')) otherNode.right = node.left
     node.left = otherNode
+    node.parent = otherNode.parent
+    if (otherNode.parent) otherNode.parent.right = node
+    otherNode.parent = node
   } else {
     if (node.hasOwnProperty('right')) otherNode.left = node.right
     node.right = otherNode
-
+    node.parent = otherNode.parent
+    if (otherNode.parent) otherNode.parent.left = node
+    otherNode.parent = node
   }
 
   if (otherNode === this.root) {
@@ -199,8 +193,8 @@ const avl = new AVL()
 // avl.insert(5)
 // console.log(avl.isBST(avl.root))
 
+avl.insert(3)
 avl.insert(0)
-avl.insert(1)
 avl.insert(2)
 // avl.insert(3)
 // avl.insert(4)
