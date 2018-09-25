@@ -22,6 +22,7 @@ class Node {
     this.value = value
     this.left = left
     this.right = right
+    this.parent = null
   }
 }
 
@@ -79,6 +80,7 @@ AVL.prototype.insert = function (value) {
     if (value < currentNode.value) {
       if (!currentNode.left) {
         currentNode.left = node
+        node.parent = currentNode
         break
       } else {
         currentNode = currentNode.left
@@ -86,6 +88,7 @@ AVL.prototype.insert = function (value) {
     } else {
       if (!currentNode.right) {
         currentNode.right = node
+        node.parent = currentNode
         break
       } else {
         currentNode = currentNode.right
@@ -105,45 +108,54 @@ AVL.prototype.selfBalance = function (node) {
     let rightChildHeight = this.height(node.right)
     let currentParsingDirection = leftChildHeight > rightChildHeight ? 'left' : 'right'
 
-    if (this.root !== node) {
-      if (this.parsingDirection === currentParsingDirection) {
-        // Single Rotation
-        let singleRotationDirection = currentParsingDirection === 'right' ? 'left' : 'right'
-        this.singleRotate(node, this.otherNode, singleRotationDirection)
-      } else {
-        // Double Rotation
-        let nodeToSwapped = node[currentParsingDirection] 
-        this.singleRotate(nodeToSwapped, node, this.parsingDirection)
-        this.singleRotate(nodeToSwapped, this.otherNode, currentParsingDirection)
-
-        return
-      }
+    let isChildBalanced = this.isBalanced(node[currentParsingDirection])
+    if(isChildBalanced) {
+      let sideToRotate = leftChildHeight > rightChildHeight ? 'right' : 'left'
+      this.singleRotate(node[currentParsingDirection], node, sideToRotate)  
     } else {
-      // Don't rotate the root node
-      this.parsingDirection = currentParsingDirection
-      this.otherNode = node
+      this.selfBalance(node[currentParsingDirection])
     }
 
-    if (!this.isBalanced(this.root)) {
-      if (node[currentParsingDirection]) {
-        this.selfBalance(node[currentParsingDirection])
-      }
-    }
+    // if (!this.isBalanced(this.root)) this.selfBalance(this.root)
+
+    // if (this.root !== node) {
+    //   if (this.parsingDirection === currentParsingDirection) {
+    //     // Single Rotation
+    //     let singleRotationDirection = currentParsingDirection === 'right' ? 'left' : 'right'
+    //     this.singleRotate(node, node.parent, singleRotationDirection)
+    //   } else {
+    //     // Double Rotation
+    //     let nodeToSwapped = node[currentParsingDirection] 
+    //     this.singleRotate(nodeToSwapped, node, this.parsingDirection)
+    //     this.singleRotate(nodeToSwapped, node.parent, currentParsingDirection)
+
+    //     return
+    //   }
+    // } else {
+    //   // Don't rotate the root node
+    //   this.parsingDirection = currentParsingDirection
+    //   this.otherNode = node
+    // }
+
+    // if (!this.isBalanced(this.root)) {
+    //   if (node[currentParsingDirection]) {
+    //     this.selfBalance(node[currentParsingDirection])
+    //   }
+    // }
   }
 }
 
 AVL.prototype.singleRotate = function (node, otherNode, direction) {
-  // console.log('node', node)
-  // console.log('otherNode', otherNode)
-  // console.log('direction', direction)
-  // console.log('************************************')
-
+  // console.log('Node ', node)
+  // console.log('OtherNode ', otherNode)
+  // console.log('******************')
   if (direction === 'left') {
+    if (node.hasOwnProperty('left')) otherNode.right = node.left
     node.left = otherNode
-    otherNode.right = null
   } else {
+    if (node.hasOwnProperty('right')) otherNode.left = node.right
     node.right = otherNode
-    otherNode.left = null
+
   }
 
   if (otherNode === this.root) {
@@ -153,11 +165,13 @@ AVL.prototype.singleRotate = function (node, otherNode, direction) {
 
 AVL.prototype.inOrderTraversal = function (root) {
   if (root) {
-    if (root === this.root) this.inOrderArray = [] 
+    if (root === this.root) this.inOrderArray = []
     this.inOrderTraversal(root.left)
     console.log(root.value)
     this.inOrderArray.push(root.value)
     this.inOrderTraversal(root.right)
+  } else {
+    return
   }
 }
 
@@ -178,9 +192,19 @@ AVL.prototype.postOrderTraversal = function (root) {
 }
 
 const avl = new AVL()
-avl.insert(3)
+// avl.insert(3)
+// avl.insert(2)
+// avl.insert(4)
+// avl.insert(6)
+// avl.insert(5)
+// console.log(avl.isBST(avl.root))
+
+avl.insert(0)
+avl.insert(1)
 avl.insert(2)
-avl.insert(4)
-avl.insert(6)
-avl.insert(5)
-console.log(avl.isBST(avl.root))
+// avl.insert(3)
+// avl.insert(4)
+// avl.insert(6)
+// avl.insert(5)
+// console.log(avl.isBST(avl.root))
+console.log(avl)
