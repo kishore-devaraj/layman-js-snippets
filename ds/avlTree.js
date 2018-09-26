@@ -1,186 +1,410 @@
 /**
- * To Build a AVL Tree
- * Create a Binary Tree with the list of values
- * On each insert check whether it is height balanced
- * If not Perform the AVL Insertions
- *    1. First check the root node and get the node height.
- *    2. Parse in the direction where the tree is present
- *    3. If the middle node has child only in the parsed direction, do single rotation
- *       opp to the parsed direction.
- *    4. If not double rotation with parsed direction first and vice versa second.
- *    5. Continue the process. 
+ * Creates a new AVL Tree.
+ *
+ * @param {function} customCompare An optional custom compare function.
  */
+var AvlTree = function (customCompare) {
+  this._root = null;
+  this._size = 0;
 
-class AVL {
-  constructor() {
-    this.root = null
+  if (customCompare) {
+    this._compare = customCompare;
   }
-}
+};
 
-class Node {
-  constructor(value, left, right) {
-    this.value = value
-    this.left = left
-    this.right = right
+/**
+ * Compares two keys with each other.
+ *
+ * @private
+ * @param {Object} a The first key to compare.
+ * @param {Object} b The second key to compare.
+ * @return {number} -1, 0 or 1 if a < b, a == b or a > b respectively.
+ */
+AvlTree.prototype._compare = function (a, b) {
+  if (a > b) {
+    return 1;
   }
-}
-
-
-AVL.prototype.isBST = function (node) {
-  this.inOrderTraversal(node)
-  // Flag to notify the BST correctness
-  this.isBST = true
-
-  // Part of bubble sort implementation - O(n)
-  for (let index = 0; index < this.inOrderArray.length - 1; index++) {
-    if (this.inOrderArray[index] > this.inOrderArray[index + 1]) {
-      this.isBST = false
-      break
-    }
+  if (a < b) {
+    return -1;
   }
-  return this.isBST
-}
+  return 0;
+};
 
-AVL.prototype.isBalanced = function (node) {
-  if (node) {
-    let leftChildHeight
-    let rightChildHeight
-    if ((!node.left) && (!node.right)) return true
+/**
+ * Inserts a new node with a specific key into the tree.
+ *
+ * @param {Object} key The key being inserted.
+ * @param {Object} value The value being inserted.
+ */
+AvlTree.prototype.insert = function (key, value) {
+  this._root = this._insert(key, value, this._root);
+  this._size++;
+};
 
-    leftChildHeight = this.height(node.left)
-    rightChildHeight = this.height(node.right)
-
-    if (Math.abs(leftChildHeight - rightChildHeight) > 1) {
-      return false
-    } else {
-      return this.isBalanced(node.left) && this.isBalanced(node.right)
-    }
-  }
-  return true
-}
-
-AVL.prototype.height = function (root) {
-  if (!root) return 0
-  let leftHeight = this.height(root.left)
-  let rightHeight = this.height(root.right)
-  return Math.max(leftHeight, rightHeight) + 1
-}
-
-AVL.prototype.insert = function (value) {
-  let node = new Node(value, null, null)
-  if (!this.root) {
-    this.root = node
-    return
+/**
+ * Inserts a new node with a specific key into the tree.
+ *
+ * @private
+ * @param {Object} key The key being inserted.
+ * @param {Object} value The value being inserted.
+ * @param {Node} root The root of the tree to insert in.
+ * @return {Node} The new tree root.
+ */
+AvlTree.prototype._insert = function (key, value, root) {
+  // Perform regular BST insertion
+  if (root === null) {
+    return new Node(key, value);
   }
 
-  let currentNode = this.root
-
-  while (currentNode) {
-    if (value < currentNode.value) {
-      if (!currentNode.left) {
-        currentNode.left = node
-        break
-      } else {
-        currentNode = currentNode.left
-      }
-    } else {
-      if (!currentNode.right) {
-        currentNode.right = node
-        break
-      } else {
-        currentNode = currentNode.right
-      }
-    }
-  }
-
-  // Check for Self Balancing
-  if (!this.isBalanced(this.root)) {
-    this.selfBalance(this.root)
-  }
-}
-
-AVL.prototype.selfBalance = function (node) {
-  if (node) {
-    let leftChildHeight = this.height(node.left)
-    let rightChildHeight = this.height(node.right)
-    let currentParsingDirection = leftChildHeight > rightChildHeight ? 'left' : 'right'
-
-    if (this.root !== node) {
-      if (this.parsingDirection === currentParsingDirection) {
-        // Single Rotation
-        let singleRotationDirection = currentParsingDirection === 'right' ? 'left' : 'right'
-        this.singleRotate(node, this.otherNode, singleRotationDirection)
-      } else {
-        // Double Rotation
-        let nodeToSwapped = node[currentParsingDirection] 
-        this.singleRotate(nodeToSwapped, node, this.parsingDirection)
-        this.singleRotate(nodeToSwapped, this.otherNode, currentParsingDirection)
-
-        return
-      }
-    } else {
-      // Don't rotate the root node
-      this.parsingDirection = currentParsingDirection
-      this.otherNode = node
-    }
-
-    if (!this.isBalanced(this.root)) {
-      if (node[currentParsingDirection]) {
-        this.selfBalance(node[currentParsingDirection])
-      }
-    }
-  }
-}
-
-AVL.prototype.singleRotate = function (node, otherNode, direction) {
-  // console.log('node', node)
-  // console.log('otherNode', otherNode)
-  // console.log('direction', direction)
-  // console.log('************************************')
-
-  if (direction === 'left') {
-    node.left = otherNode
-    otherNode.right = null
+  if (this._compare(key, root.key) < 0) {
+    root.left = this._insert(key, value, root.left);
+  } else if (this._compare(key, root.key) > 0) {
+    root.right = this._insert(key, value, root.right);
   } else {
-    node.right = otherNode
-    otherNode.left = null
+    // It's a duplicate so insertion failed, decrement size to make up for it
+    this._size--;
+    return root;
   }
 
-  if (otherNode === this.root) {
-    this.root = node
+  // Update height and rebalance tree
+  root.height = Math.max(root.leftHeight(), root.rightHeight()) + 1;
+  var balanceState = getBalanceState(root);
+
+  if (balanceState === BalanceState.UNBALANCED_LEFT) {
+    if (this._compare(key, root.left.key) < 0) {
+      // Left left case
+      root = root.rotateRight();
+    } else {
+      // Left right case
+      root.left = root.left.rotateLeft();
+      return root.rotateRight();
+    }
+  }
+
+  if (balanceState === BalanceState.UNBALANCED_RIGHT) {
+    if (this._compare(key, root.right.key) > 0) {
+      // Right right case
+      root = root.rotateLeft();
+    } else {
+      // Right left case
+      root.right = root.right.rotateRight();
+      return root.rotateLeft();
+    }
+  }
+
+  return root;
+};
+
+/**
+ * Deletes a node with a specific key from the tree.
+ *
+ * @param {Object} key The key being deleted.
+ */
+AvlTree.prototype.delete = function (key) {
+  this._root = this._delete(key, this._root);
+  this._size--;
+};
+
+/**
+ * Deletes a node with a specific key from the tree.
+ *
+ * @private
+ * @param {Object} key The key being deleted.
+ * @param {Node} root The root of the tree to delete from.
+ * @return {Node} The new tree root.
+ */
+AvlTree.prototype._delete = function (key, root) {
+  // Perform regular BST deletion
+  if (root === null) {
+    this._size++;
+    return root;
+  }
+
+  if (this._compare(key, root.key) < 0) {
+    // The key to be deleted is in the left sub-tree
+    root.left = this._delete(key, root.left);
+  } else if (this._compare(key, root.key) > 0) {
+    // The key to be deleted is in the right sub-tree
+    root.right = this._delete(key, root.right);
+  } else {
+    // root is the node to be deleted
+    if (!root.left && !root.right) {
+      root = null;
+    } else if (!root.left && root.right) {
+      root = root.right;
+    } else if (root.left && !root.right) {
+      root = root.left;
+    } else {
+      // Node has 2 children, get the in-order successor
+      var inOrderSuccessor = minValueNode(root.right);
+      root.key = inOrderSuccessor.key;
+      root.value = inOrderSuccessor.value;
+      root.right = this._delete(inOrderSuccessor.key, root.right);
+    }
+  }
+
+  if (root === null) {
+    return root;
+  }
+
+  // Update height and rebalance tree
+  root.height = Math.max(root.leftHeight(), root.rightHeight()) + 1;
+  var balanceState = getBalanceState(root);
+
+  if (balanceState === BalanceState.UNBALANCED_LEFT) {
+    // Left left case
+    if (getBalanceState(root.left) === BalanceState.BALANCED ||
+        getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
+      return root.rotateRight();
+    }
+    // Left right case
+    if (getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
+      root.left = root.left.rotateLeft();
+      return root.rotateRight();
+    }
+  }
+
+  if (balanceState === BalanceState.UNBALANCED_RIGHT) {
+    // Right right case
+    if (getBalanceState(root.right) === BalanceState.BALANCED ||
+        getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
+      return root.rotateLeft();
+    }
+    // Right left case
+    if (getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
+      root.right = root.right.rotateRight();
+      return root.rotateLeft();
+    }
+  }
+
+  return root;
+};
+
+/**
+ * Gets the value of a node within the tree with a specific key.
+ *
+ * @param {Object} key The key being searched for.
+ * @return {Object} The value of the node or null if it doesn't exist.
+ */
+AvlTree.prototype.get = function (key) {
+  if (this._root === null) {
+    return null;
+  }
+
+  return this._get(key, this._root).value;
+};
+
+/**
+ * Gets the value of a node within the tree with a specific key.
+ *
+ * @private
+ * @param {Object} key The key being searched for.
+ * @param {Node} root The root of the tree to search in.
+ * @return {Object} The node or null if it doesn't exist.
+ */
+AvlTree.prototype._get = function (key, root) {
+  var result = this._compare(key, root.key);
+
+  if (result === 0) {
+    return root;
+  }
+
+  if (result < 0) {
+    if (!root.left) {
+      return null;
+    }
+    return this._get(key, root.left);
+  }
+
+  if (!root.right) {
+    return null;
+  }
+  return this._get(key, root.right);
+};
+
+/**
+ * Gets whether a node with a specific key is within the tree.
+ *
+ * @param {Object} key The key being searched for.
+ * @return {boolean} Whether a node with the key exists.
+ */
+AvlTree.prototype.contains = function (key) {
+  if (this._root === null) {
+    return false;
+  }
+
+  return !!this._get(key, this._root);
+};
+
+/**
+ * @return {Object} The minimum key in the tree.
+ */
+AvlTree.prototype.findMinimum = function () {
+  return minValueNode(this._root).key;
+};
+
+/**
+ * Gets the minimum value node, rooted in a particular node.
+ *
+ * @private
+ * @param {Node} root The node to search.
+ * @return {Node} The node with the minimum key in the tree.
+ */
+function minValueNode(root) {
+  var current = root;
+  while (current.left) {
+    current = current.left;
+  }
+  return current;
+}
+
+/**
+ * @return {Object} The maximum key in the tree.
+ */
+AvlTree.prototype.findMaximum = function () {
+  return maxValueNode(this._root).key;
+};
+
+/**
+ * Gets the maximum value node, rooted in a particular node.
+ *
+ * @private
+ * @param {Node} root The node to search.
+ * @return {Node} The node with the maximum key in the tree.
+ */
+function maxValueNode(root) {
+  var current = root;
+  while (current.right) {
+    current = current.right;
+  }
+  return current;
+}
+
+/**
+ * @return {number} The size of the tree.
+ */
+AvlTree.prototype.size = function () {
+  return this._size;
+};
+
+/**
+ * @return {boolean} Whether the tree is empty.
+ */
+AvlTree.prototype.isEmpty = function () {
+  return this._size === 0;
+};
+
+/**
+ * Represents how balanced a node's left and right children are.
+ *
+ * @private
+ */
+var BalanceState = {
+  UNBALANCED_RIGHT: 1,
+  SLIGHTLY_UNBALANCED_RIGHT: 2,
+  BALANCED: 3,
+  SLIGHTLY_UNBALANCED_LEFT: 4,
+  UNBALANCED_LEFT: 5
+};
+
+/**
+ * Gets the balance state of a node, indicating whether the left or right
+ * sub-trees are unbalanced.
+ *
+ * @private
+ * @param {Node} node The node to get the difference from.
+ * @return {BalanceState} The BalanceState of the node.
+ */
+function getBalanceState(node) {
+  var heightDifference = node.leftHeight() - node.rightHeight();
+  switch (heightDifference) {
+    case -2: return BalanceState.UNBALANCED_RIGHT;
+    case -1: return BalanceState.SLIGHTLY_UNBALANCED_RIGHT;
+    case 1: return BalanceState.SLIGHTLY_UNBALANCED_LEFT;
+    case 2: return BalanceState.UNBALANCED_LEFT;
+    default: return BalanceState.BALANCED;
   }
 }
 
-AVL.prototype.inOrderTraversal = function (root) {
-  if (root) {
-    if (root === this.root) this.inOrderArray = [] 
-    this.inOrderTraversal(root.left)
-    console.log(root.value)
-    this.inOrderArray.push(root.value)
-    this.inOrderTraversal(root.right)
-  }
-}
 
-AVL.prototype.preOrderTraversal = function (root) {
-  if (root) {
-    console.log(root.value)
-    this.preOrderTraversal(root.left)
-    this.preOrderTraversal(root.right)
-  }
-}
 
-AVL.prototype.postOrderTraversal = function (root) {
-  if (root) {
-    console.log(root.value)
-    this.postOrderTraversal(root.left)
-    this.postOrderTraversal(root.right)
-  }
-}
+/**
+ * Creates a new AVL Tree node.
+ *
+ * @private
+ * @param {Object} key The key of the new node.
+ * @param {Object} value The value of the new node.
+ */
+var Node = function (key, value) {
+  this.left = null;
+  this.right = null;
+  this.height = null;
+  this.key = key;
+  this.value = value;
+};
 
-const avl = new AVL()
-avl.insert(3)
-avl.insert(2)
-avl.insert(4)
-avl.insert(6)
-avl.insert(5)
-console.log(avl.isBST(avl.root))
+/**
+ * Performs a right rotate on this node.
+ *
+ *       b                           a
+ *      / \                         / \
+ *     a   e -> b.rotateRight() -> c   b
+ *    / \                             / \
+ *   c   d                           d   e
+ *
+ * @return {Node} The root of the sub-tree; the node where this node used to be.
+ */
+Node.prototype.rotateRight = function () {
+  var other = this.left;
+  this.left = other.right;
+  other.right = this;
+  this.height = Math.max(this.leftHeight(), this.rightHeight()) + 1;
+  other.height = Math.max(other.leftHeight(), this.height) + 1;
+  return other;
+};
+
+/**
+ * Performs a left rotate on this node.
+ *
+ *     a                              b
+ *    / \                            / \
+ *   c   b   -> a.rotateLeft() ->   a   e
+ *      / \                        / \
+ *     d   e                      c   d
+ *
+ * @return {Node} The root of the sub-tree; the node where this node used to be.
+ */
+Node.prototype.rotateLeft = function () {
+  var other = this.right;
+  this.right = other.left;
+  other.left = this;
+  this.height = Math.max(this.leftHeight(), this.rightHeight()) + 1;
+  other.height = Math.max(other.rightHeight(), this.height) + 1;
+  return other;
+};
+
+/**
+ * Convenience function to get the height of the left child of the node,
+ * returning -1 if the node is null.
+ *
+ * @return {number} The height of the left child, or -1 if it doesn't exist.
+ */
+Node.prototype.leftHeight = function () {
+  if (!this.left) {
+    return -1;
+  }
+  return this.left.height;
+};
+
+/**
+ * Convenience function to get the height of the right child of the node,
+ * returning -1 if the node is null.
+ *
+ * @return {number} The height of the right child, or -1 if it doesn't exist.
+ */
+Node.prototype.rightHeight = function () {
+  if (!this.right) {
+    return -1;
+  }
+  return this.right.height;
+};
