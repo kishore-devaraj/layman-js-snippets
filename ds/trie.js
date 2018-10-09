@@ -55,6 +55,22 @@ class Trie {
     this.node.value = true
   }
 
+  insertSentence(sentence) {
+    this.sentence = sentence
+    this.words = this.sentence.split(' ')
+    this.words.forEach(word => this.insertWord(word))
+  }
+
+  insertWord(word) {
+    const chars = word.toLowerCase().split('')
+    this.createTree(chars)
+  }
+
+  isSentenceExist(sentence) {
+    const words = sentence.split(' ')
+    return words.every(word => this.isWordExist(word))
+  }
+
   isWordExist(word) {
     this.node = this.root
     const chars = word.toLowerCase().split('')
@@ -75,4 +91,6 @@ class Trie {
 const trie = new Trie('Peter Petted the pepper')
 trie.createTrie()
 // console.log(trie)
-console.log(trie.isWordExist('them'))
+console.log(trie.isSentenceExist('them number'))
+trie.insertSentence('them number')
+console.log(trie.isSentenceExist('them number'))
