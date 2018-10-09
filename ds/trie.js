@@ -12,6 +12,7 @@ class Node {
   constructor(props) {
     this.key = props.hasOwnProperty('key') ? props.key : ''
     this.value = props.hasOwnProperty('value') ? props.value : null
+    this.parent = props.hasOwnProperty('parent') ? props.parent : null
     this.ref = new Array(26)
   }
 }
@@ -43,7 +44,7 @@ class Trie {
       const charValue = char.charCodeAt(0) - 97
       if (this.node.ref[charValue] === undefined) {
         // Create the Node
-        const node = new Node({ key: char })
+        const node = new Node({ key: char, parent: this.node })
         this.node.ref[charValue] = node
         this.node = node
       } else {
@@ -64,6 +65,28 @@ class Trie {
   insertWord(word) {
     const chars = word.toLowerCase().split('')
     this.createTree(chars)
+  }
+
+  deleteWord(word) {
+    if (this.isWordExist(word.toLowerCase())) {
+      let deleteFurther = true
+      while (deleteFurther) {
+        const parent = this.node.parent
+        const key = this.node.key
+        this.node.value = false
+        if (this.node.ref.some(ref => ref !== undefined)) {
+          // This node has references
+          deleteFurther = false
+        } else {
+          parent.ref[key.charCodeAt(0) - 97] = null
+          this.node = parent
+        }
+        console.log(key)
+      }
+      return true
+    } else {
+      return false
+    }
   }
 
   isSentenceExist(sentence) {
@@ -88,9 +111,15 @@ class Trie {
   }
 }
 
-const trie = new Trie('Peter Petted the pepper')
+const trie = new Trie('some sommed')
 trie.createTrie()
 // console.log(trie)
-console.log(trie.isSentenceExist('them number'))
-trie.insertSentence('them number')
-console.log(trie.isSentenceExist('them number'))
+// console.log(trie.isSentenceExist('them number'))
+// trie.insertSentence('them number')
+// console.log(trie.isSentenceExist('them number'))
+// console.log(trie.isWordExist('some'))
+// console.log(trie.isWordExist('sommed'))
+// console.log('****************************')
+// console.log(trie.deleteWord('sommed'))
+// console.log(trie.isWordExist('some'))
+// console.log(trie.isWordExist('sommed'))
