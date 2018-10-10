@@ -6,6 +6,9 @@
  * 1. Autocomplete feature in google
  * 2. Searching for string in a sentence.
  * 3. Used to check the existence of the word.
+ * 
+ * Building a Trie takes of O(M*n) Where M is the max length of the word and the n is the number of words
+ * Searching, Insering, Deleting takes a constant time of O(a*n) where is a is the length of the word
  */
 
 class Node {
@@ -67,21 +70,33 @@ class Trie {
     this.createTree(chars)
   }
 
+  deleteSentence(sentence) {
+    const words = sentence.toLowerCase().split(' ')
+    return words.every(word => this.deleteWord(word))
+  }
+
   deleteWord(word) {
     if (this.isWordExist(word.toLowerCase())) {
       let deleteFurther = true
+      this.node.value = null
+
       while (deleteFurther) {
-        const parent = this.node.parent
-        const key = this.node.key
-        this.node.value = false
-        if (this.node.ref.some(ref => ref !== undefined)) {
-          // This node has references
+        let parent, key
+        if (this.node.key !== '') {
+          parent = this.node.parent
+          key = this.node.key
+        } else break
+        
+        // console.log(key)
+        // console.log('Value: ' + this.node.value)
+        if (this.node.value === true || this.node.ref.some(ref => ref !== undefined)) {
+          // console.log('This node child')
           deleteFurther = false
         } else {
-          parent.ref[key.charCodeAt(0) - 97] = null
+          // console.log('This node no other child')
+          parent.ref[key.charCodeAt(0) - 97] = undefined          
           this.node = parent
         }
-        console.log(key)
       }
       return true
     } else {
@@ -111,15 +126,21 @@ class Trie {
   }
 }
 
-const trie = new Trie('some sommed')
+const trie = new Trie('sum summer summed summon')
 trie.createTrie()
 // console.log(trie)
 // console.log(trie.isSentenceExist('them number'))
 // trie.insertSentence('them number')
 // console.log(trie.isSentenceExist('them number'))
-// console.log(trie.isWordExist('some'))
-// console.log(trie.isWordExist('sommed'))
-// console.log('****************************')
-// console.log(trie.deleteWord('sommed'))
-// console.log(trie.isWordExist('some'))
-// console.log(trie.isWordExist('sommed'))
+// console.log(trie.isWordExist('sum'))
+// console.log(trie.isWordExist('summer'))
+// // console.log('****************************')
+// console.log(trie.deleteWord('summer'))
+// console.log(trie.isWordExist('summer'))
+// console.log(trie.isWordExist('sum'))
+// console.log(trie.isSentenceExist('summer summed'))
+// console.log(trie.deleteSentence('summer summed'))
+// console.log(trie.isSentenceExist('summer summed'))
+// console.log(trie.isWordExist('summer'))
+// console.log(trie.isWordExist('summed'))
+
