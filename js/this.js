@@ -62,7 +62,7 @@
 
 
   /**
-   * Array function will override all the rules
+   * Arrow function will override all the rules
    * this will receive the value of its surrounding scope when it's created
    */
 
