@@ -58,6 +58,7 @@ console.log(bird)
 /**
  * Encapsulation - Concept of binding data and methods that modifies data together
  * Abstraction - This way to achieve encapsulation
+ * IMPORTANT !! Better explanation is given below
  */
 
  const City = function (name, country, slogan) {
@@ -264,3 +265,34 @@ let human = Human('Kishore', 23)
        method1: '',
        method2: ''
    }
+
+   /**
+    * Encapsulation - Hiding data and its related methods into a single class
+    * Abstraction - Hiding the implementation details of a particular thing
+    */
+
+    /**
+     * Polymorphism: Ablity of a method or var to have different meaning
+     * in different scenario
+     */
+
+    const Employer = function (name) {
+        this.name = name
+    }
+
+    Employer.prototype.does = function () {
+        console.log('It pays other people for doing his work')
+    }
+
+    const Employee = function (name) {
+        this.name = name
+    }
+
+    Employee.propotype.does = function () {
+        console.log('He works to get paid')
+    }
+
+    /** 
+     * The above to different objects have the same method name
+     * yet having different outcomes. This is how polymorphism is achieved in js
+    */ 
