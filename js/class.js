@@ -117,7 +117,6 @@ console.log(rect2.prototypeWidth)
  class Car extends Vehicle {
 	 constructor(name){
 		 super(name)
-		 this.name = name
 	 }
 
 	 runs(){

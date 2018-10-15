@@ -74,4 +74,3 @@ var name = 'kishore' // window.name -> 'kishore'
    const app = 'myapp'
    app = 'newapp' // Cannot be reassigned
 
-   
