@@ -228,3 +228,39 @@ let human = Human('Kishore', 23)
   
   dog.makeSound();
   cat.makeSound();
+
+  /**
+   * Way 4: One more way to do it, to override the default parent method
+   */
+
+   const Animal = function (name) {
+       this.name = name
+   }
+
+   Animal.prototype.walk = function () {
+       console.log('It\' walking')
+   }
+
+   const Dog = function (name, breed) {
+       this.breed = breed
+       Animal.call(this, name)
+   }
+
+   Dog.propotype = Object.create(Animal.prototype)
+
+   // Overriding the parent method
+   Dog.propotype.walk = function () {
+       console.log(`${this.name} is walking`)
+   }
+
+  /**
+   * Namespace - A separate entity or container to hold all the methods and primitives
+   * along with it
+   */
+
+   const MY_APP = MY_APP || {}
+
+   MY_APP.commonMethod = {
+       method1: '',
+       method2: ''
+   }
