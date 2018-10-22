@@ -11,7 +11,7 @@ function getName() {
  * getName: {
  *  name: getName, // Name of the function
  *  length: 0, // Number of the parameter
- *  prototype: Prototype of its parent(i.e say Object)
+ *  prototype: Points to another obj, whose constructor points back to function object itself
  * }
  * You can also add properties to the function
  */
