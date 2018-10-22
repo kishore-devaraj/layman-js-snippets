@@ -40,23 +40,64 @@ Person.prototype.getValue = function () {
 }
 
 let person1 = new Person(10)
-console.log(person1.getValue())
+console.log(person1.getValue()) // 10
 
 /**
  * Extending this to subclass
  */
 
- function SpecialPerson (value) {
-   Person.call(this, value)
- }
+function SpecialPerson(value) {
+  Person.call(this, value)
+}
 
- SpecialPerson.prototype = Object.create(Person.prototype)
- SpecialPerson.prototype.constructor = SpecialPerson
+SpecialPerson.prototype = Object.create(Person.prototype)
+SpecialPerson.prototype.constructor = SpecialPerson
 
- /** Overriding and Polymorphism */
- SpecialPerson.prototype.getValue = function () {
-    return Person.prototype.getValue.call(this) + '!!'
- }
+/** Overriding and Polymorphism */
+SpecialPerson.prototype.getValue = function () {
+  return Person.prototype.getValue.call(this) + '!!'
+}
 
- let person2 = new SpecialPerson(11)
- console.log(person2.getValue())
+let person2 = new SpecialPerson(11)
+console.log(person2.getValue()) // 11!!
+
+/**
+ * Instanceof method is used to check two object whether they are same
+ * It's only applicable for classical model not for prototype model
+ */
+
+console.log(person1 instanceof Person) // true
+console.log(person1 instanceof SpecialPerson) // false
+console.log(person2 instanceof Person) // true
+
+/**
+ * This same classical model can be rewritten with ecmascript 6
+ * 'class' syntax
+ */
+
+//  class Person {
+//    constructor(value) {
+//      this._value = value
+//    }
+
+//    getValue () {
+//      return this._value
+//    }
+//  }
+
+//  let person3 = new Person(3)
+//  console.log(person3.getValue()) // 3
+
+//  class SpecialPerson extends Person {
+//    constructor(value) {
+//      super(value)
+//    }
+
+//    getValue () {
+//     return super.getValue() + '!!'
+//    }
+//  }
+
+//  let person4 = new SpecialPerson(56)
+//  console.log(person4) // 56!!
+
